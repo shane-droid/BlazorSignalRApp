@@ -35,6 +35,7 @@ namespace BlazorSignalRApp.Server.Controllers
              _hubConnection.StartAsync();
 
             Send();
+            Console.WriteLine(lane + name + ph);
 
             return View();
         }

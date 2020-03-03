@@ -13,7 +13,7 @@
 <hr>
 
 <div> <h1>Lane1</h1></div>
-<div style="background-color: @backColor">    <h1>@lane1Message </h1>  </div>
+<div style="background-color: @laneColor">    <h1>@lane1Message </h1>  </div>
 
 <hr>
 
@@ -30,7 +30,7 @@
 
     private string lane1Message;
     private string lane2Message;
-    private string backColor = "white";
+    private string laneColor = "red";
     private int flashCounter = 0;
     private int soundCounter = 0;
     Timer timer;
@@ -52,13 +52,13 @@
 
     private void elapsedTimer()
     {
-        if (backColor == "white")
+        if (laneColor == "white")
         {
-            backColor = "yellow";
+            laneColor = "yellow";
         }
         else
         {
-            backColor = "white";
+            laneColor = "white";
         }
 
         StateHasChanged();
@@ -107,27 +107,24 @@
     }
 
 
-
-
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             await JSRuntime.InvokeVoidAsync("PlaySound");
             timer.Start();
-            StateHasChanged();
+            
+           
         }
-
-
+        
         if (!firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("PlaySound2");
+            await JSRuntime.InvokeVoidAsync("PlaySound");
             timer.Start();
             
+           
         }
-
-       
+ 
     }
 
 
