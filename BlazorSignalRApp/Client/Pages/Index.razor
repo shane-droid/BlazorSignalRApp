@@ -1,0 +1,137 @@
+﻿@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime;
+@page "/"
+
+@using Microsoft.AspNetCore.SignalR.Client
+@using System.Timers;
+
+
+@inject NavigationManager NavigationManager
+
+
+
+<hr>
+
+<div> <h1>Lane1</h1></div>
+<div style="background-color: @backColor">    <h1>@lane1Message </h1>  </div>
+
+<hr>
+
+<div> <h1>Lane2</h1></div>
+<h1>@lane2Message  </h1>
+<hr>
+<audio autoplay controls><source src="Sounds/you-have-new-message.wav" /></audio>
+
+
+
+
+@code {
+    private HubConnection _hubConnection;
+
+    private string lane1Message;
+    private string lane2Message;
+    private string backColor = "white";
+    private int flashCounter = 0;
+    private int soundCounter = 0;
+    Timer timer;
+
+
+
+    private void elapsedEventHandler(object sender, ElapsedEventArgs e)
+    {
+        if (flashCounter < 11)
+        {
+            flashCounter++;
+            elapsedTimer();
+        }
+        if (flashCounter == 10)
+        {
+            timer.Stop();
+        }
+    }
+
+    private void elapsedTimer()
+    {
+        if (backColor == "white")
+        {
+            backColor = "yellow";
+        }
+        else
+        {
+            backColor = "white";
+        }
+
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        timer = new Timer();
+        timer.Interval = 500;
+        timer.Elapsed += elapsedEventHandler;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+
+        _hubConnection = new HubConnectionBuilder()
+            //.WithUrl(NavigationManager.ToAbsoluteUri("/chatHub"))
+            .WithUrl(NavigationManager.ToAbsoluteUri("https://localhost:44376/chatHub"))
+            .Build();
+
+
+
+        _hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
+        {
+            if (user == "lane1")
+            {
+                lane1Message = $"{message}" + " Please enter  room";
+
+
+            }
+            if (user == "lane2")
+            {
+                lane2Message = $"{message}" + " Please enter  room";
+            }
+
+            flashCounter = 0;
+            soundCounter = 0;
+
+            StateHasChanged();
+
+        });
+
+        await _hubConnection.StartAsync();
+
+    }
+
+
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("PlaySound");
+            timer.Start();
+            StateHasChanged();
+        }
+
+
+        if (!firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("PlaySound2");
+            timer.Start();
+            
+        }
+
+       
+    }
+
+
+    public bool IsConnected =>
+    _hubConnection.State == HubConnectionState.Connected;
+}
+

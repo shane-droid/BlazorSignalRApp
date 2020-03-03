@@ -1,0 +1,27 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Home</title>
+</head>
+<body>
+
+    <div>
+        @(await Html.RenderComponentAsync<BlazorSignalRApp.Client.Pages.Index>(RenderMode.ServerPrerendered))
+
+    </div>
+
+
+
+
+
+</body>
+</html>
+
