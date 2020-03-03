@@ -4,6 +4,7 @@
 
 @using Microsoft.AspNetCore.SignalR.Client
 @using System.Timers;
+@implements IDisposable
 
 
 @inject NavigationManager NavigationManager
@@ -113,18 +114,26 @@
         {
             await JSRuntime.InvokeVoidAsync("PlaySound");
             timer.Start();
-            
-           
+
+
         }
-        
+
         if (!firstRender)
         {
             await JSRuntime.InvokeVoidAsync("PlaySound");
             timer.Start();
-            
-           
+
         }
- 
+
+    }
+
+    public void Dispose()
+    {
+        if (timer != null)
+        {
+            timer.Dispose();
+        }
+
     }
 
 
